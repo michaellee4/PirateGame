@@ -19,7 +19,7 @@ public:
 		dy = 0;
 		grounded = true;
 		groundHeight = pos.y;
-		gravityRate = 0.7f;
+		gravityRate = 0.6f;
 	}
 	void draw(RenderWindow& window){
 		window.draw(player);
@@ -28,6 +28,19 @@ public:
 		if((windowWidth-getRightBound())<=0||getX()<=0)
 			setXVelocity(-getXVelocity());
 		
+		//begin jump code
+		setYVelocity(getYVelocity() + getGravity());
+    	float positionY = getY() + getYVelocity();
+    	float positionX = getX() + getXVelocity();
+    
+    	if(positionY > groundHeight)
+    	{
+        	positionY = groundHeight;
+        	setYVelocity (0.0);
+        	setOnGround(true);
+    	}
+    	//end jump code
+
 		player.move(Vector2f(getXVelocity(),getYVelocity()));
 	}
 	int getX() const{
@@ -59,6 +72,12 @@ public:
 	}
 	float getGravity()const{
 		return gravityRate;
+	}
+	void startJump(float initialYV){
+		if(onGround()){
+			dy = initialYV;
+			setOnGround(false);
+		}
 	}
 	// ~Player();
 };

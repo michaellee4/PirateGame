@@ -4,11 +4,12 @@
 using namespace sf;
 using namespace std;
 
-const int windowWidth = 800;
-const int windowHeight = 600;
+const int windowWidth = 500;
+const int windowHeight = 200;
 const int playerWidth = 25;
 const int playerHeight = 45;
 const float playerXVelocity = 3.3f;
+const float playerInitialJump = -8.5f;
 
 RenderWindow window;
 
@@ -28,16 +29,19 @@ int main()
     while (window.isOpen())
     {
         Event event;
-        if(Keyboard::isKeyPressed(Keyboard::Space)){
-            if(p1.onGround()){
-                p1.setYVelocity(-5.f);
-                p1.setOnGround(false);
-            }
-        }
         while (window.pollEvent(event))
         {
             if (event.type == Event::Closed)
                 window.close();
+
+            if (event.type == Event::KeyPressed){
+                if (event.key.code == Keyboard::Space){
+                    p1.startJump(playerInitialJump);
+                }
+                if(event.key.code==Keyboard::W){
+                    p2.startJump(playerInitialJump);
+                }
+            }
             if(Keyboard::isKeyPressed(Keyboard::Q))
                 window.close();
         }
@@ -68,4 +72,7 @@ void makeWindow(){
 
     //enable V-sync
     window.setVerticalSyncEnabled(true);
+
+    //limits to 1 action per key press
+    window.setKeyRepeatEnabled(false);
 }
