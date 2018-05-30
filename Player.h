@@ -1,45 +1,77 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Platform.h"
 using namespace sf;
+
 class Player
 {
 protected:
 	float dx;
 	float dy;
 	float groundHeight;
+	int playerHeight;
+	int playerWidth;
 	bool grounded;
 	RectangleShape player;
-	float gravityRate;
+	bool hasWeapon;
+
+	const float defaultXVelocity = 3.f;
+	const float playerInitialJump = -15.f;
+	const float gravityRate = 1.f;
+	vector<Platform> platforms;
 public:
-	Player(Vector2f size, Vector2f pos, float XVelocity, Color c){
+	Player(Vector2f size, Vector2f pos, bool p1p2, Color c, const vector<Platform> t ){
 		player.setSize(size);
 		player.setPosition(pos);
 		player.setFillColor(c);
-		dx = XVelocity;
+		playerHeight= player.getSize().y;
+		playerWidth = player.getSize().x;
+		dx = p1p2?-defaultXVelocity:defaultXVelocity;
 		dy = 0;
 		grounded = true;
-		groundHeight = pos.y;
-		gravityRate = 0.6f;
+		groundHeight = pos.y+size.y;
+		hasWeapon = true;
+		platforms = t;
 	}
 	void draw(RenderWindow& window){
 		window.draw(player);
 	}
-	void move(int windowWidth){
-		if((windowWidth-getRightBound())<=0||getX()<=0)
-			setXVelocity(-getXVelocity());
-		
+
+	//add's initial upwards momentum to jump
+	void startJump(){
+		if(onGround()){
+			dy = playerInitialJump;
+			setOnGround(false);
+		}
+	}
+
+	//code to simulate gravity, adds rate of gravity to dy until you hit a platform or the floor
+	void gravity(){
 		//begin jump code
-		setYVelocity(getYVelocity() + getGravity());
-    	float positionY = getY() + getYVelocity();
-    	float positionX = getX() + getXVelocity();
-    
-    	if(positionY > groundHeight)
-    	{
-        	positionY = groundHeight;
-        	setYVelocity (0.0);
-        	setOnGround(true);
+    	int platformHeight = groundHeight;
+    	setYVelocity(getYVelocity() + getGravity());
+
+    	//falling, need to check for collisions
+    	if(getYVelocity()>0){
+    		setOnGround(false);
+    		for(Platform p : platforms){
+    			if(getRightBound()>=p.getX()&&getX()<=p.getRightBound()&& p.getY()>=getLowerBound())
+    				platformHeight = min(p.getY(),platformHeight);
+    		}
+    		if(getLowerBound() + getYVelocity()> platformHeight){
+				setYVelocity(0.0);
+			    setOnGround(true);
+    		}	
     	}
+    	
     	//end jump code
+	}
+	void move(int windowWidth){
+		//check for collisions with the side boundaries
+		if(windowWidth<=getRightBound()||getX()<=0)
+			setXVelocity(-getXVelocity());
+
+		gravity();
 
 		player.move(Vector2f(getXVelocity(),getYVelocity()));
 	}
@@ -48,6 +80,9 @@ public:
 	}
 	int getY() const{
 		return player.getPosition().y;
+	}
+	int getLowerBound()const{
+		return player.getPosition().y+player.getSize().y;
 	}
 	int getRightBound() const{
 		return player.getPosition().x+player.getSize().x;
@@ -72,12 +107,6 @@ public:
 	}
 	float getGravity()const{
 		return gravityRate;
-	}
-	void startJump(float initialYV){
-		if(onGround()){
-			dy = initialYV;
-			setOnGround(false);
-		}
 	}
 	// ~Player();
 };

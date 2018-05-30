@@ -1,8 +1,8 @@
 main: Pirate.o
-		g++ Pirate.o -o main -lsfml-graphics -lsfml-window -lsfml-system
+		g++ -std=c++11 Pirate.o -o main -lsfml-graphics -lsfml-window -lsfml-system
 
 Pirate.o: Pirate.cpp
-		g++ -c Pirate.cpp
+		g++ -std=c++11 -c Pirate.cpp
 
 clean:
-	rm main
+	rm main Pirate.o
