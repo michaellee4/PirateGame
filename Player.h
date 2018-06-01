@@ -6,18 +6,18 @@ using namespace sf;
 class Player
 {
 protected:
-	float dx;
-	float dy;
-	float groundHeight;
+	int dx;
+	int dy;
 	int playerHeight;
 	int playerWidth;
 	bool grounded;
 	RectangleShape player;
 	bool hasWeapon;
 
-	constexpr static float defaultXVelocity = 3.f;
-	constexpr static float playerInitialJump = -15.f;
-	constexpr static float gravityRate = 1.f;
+	constexpr static int defaultXVelocity = 3;
+	constexpr static int playerInitialJump = -15;
+	constexpr static int gravityRate = 1;
+
 	vector<Platform> platforms;
 public:
 	Player(Vector2f size, Vector2f pos, bool p1p2, Color c, const vector<Platform> t ){
@@ -26,12 +26,12 @@ public:
 		player.setFillColor(c);
 		playerHeight= player.getSize().y;
 		playerWidth = player.getSize().x;
+		platforms = t;
+
 		dx = p1p2?-defaultXVelocity:defaultXVelocity;
 		dy = 0;
 		grounded = true;
-		groundHeight = pos.y+size.y;
 		hasWeapon = true;
-		platforms = t;
 	}
 	void draw(RenderWindow& window){
 		window.draw(player);
@@ -48,7 +48,7 @@ public:
 	//code to simulate gravity, adds rate of gravity to dy until you hit a platform or the floor
 	void gravity(){
 		//begin jump code
-    	int platformHeight = groundHeight;
+    	int platformHeight = platforms[0].getY();
     	setYVelocity(getYVelocity() + getGravity());
 
     	//falling, need to check for collisions
@@ -90,16 +90,16 @@ public:
 	int getRightBound() const{
 		return player.getPosition().x+player.getSize().x;
 	}
-	float getXVelocity() const{
+	int getXVelocity() const{
 		return dx;
 	}
-	float getYVelocity() const{
+	int getYVelocity() const{
 		return dy;
 	}
-	void setXVelocity(const float newX){
+	void setXVelocity(const int newX){
 		dx = newX;
 	}
-	void setYVelocity(const float newY){
+	void setYVelocity(const int newY){
 		dy = newY;
 	}
 	bool onGround(){
@@ -108,7 +108,7 @@ public:
 	void setOnGround(bool g){
 		grounded = g;
 	}
-	float getGravity()const{
+	int getGravity()const{
 		return gravityRate;
 	}
 	// ~Player();

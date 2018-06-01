@@ -21,24 +21,17 @@ const int windowHeight = 400;
 const int playerWidth = 25;
 const int playerHeight = 45;
 
-RenderWindow window;
-
-void makeWindow();
+RenderWindow& makeWindow();
+Platform makeFloor();
+vector<Platform> makePlatforms();
 
 int main()  
 {   
     //Creates the drawing window
-    makeWindow();
+    RenderWindow& window = makeWindow();
  
-    //test platform
-    vector<Platform> platforms;
-    Vector2f pDim(100,5);
-    Platform x = Platform (pDim, Vector2f(75,windowHeight-playerHeight-30));
-    Platform y = Platform (pDim, Vector2f(windowWidth/2-pDim.x/2,windowHeight-playerHeight-125));
-    Platform z = Platform (pDim, Vector2f(windowWidth-pDim.x-75,windowHeight-playerHeight-30));
-    platforms.push_back (x);
-    platforms.push_back (y);
-    platforms.push_back (z);
+    //test platform, 1st platform to be added must be the floor
+    vector<Platform> platforms = makePlatforms();
 
     //initialize player rectangles
     Vector2f playerDim(playerWidth,playerHeight);
@@ -83,8 +76,35 @@ int main()
     return 0;
 }
 
-void makeWindow(){
-    window.create(VideoMode(windowWidth, windowHeight), "SFML works!");
+
+vector<Platform> makePlatforms(){
+
+	vector<Platform> platforms;
+    platforms.push_back(makeFloor());
+	Vector2f pDim(100,5);
+
+    Platform x = Platform (pDim, Vector2f(75,windowHeight-playerHeight-30));
+    Platform y = Platform (pDim, Vector2f(windowWidth/2-pDim.x/2,windowHeight-playerHeight-125));
+    Platform z = Platform (pDim, Vector2f(windowWidth-pDim.x-75,windowHeight-playerHeight-30));
+    
+    
+    platforms.push_back (x);
+    platforms.push_back (y);
+    platforms.push_back (z);
+
+
+    return platforms;
+}
+
+Platform makeFloor(){
+	Platform floor = Platform(Vector2f(windowWidth, 1), Vector2f(0, windowHeight));
+    return floor;
+}
+
+RenderWindow& makeWindow(){
+	static RenderWindow window;
+
+    window.create(VideoMode(windowWidth, windowHeight), "Game");
 
     //gets the dimensions of the current screen to center the window
     int height = VideoMode::getDesktopMode().height;
@@ -98,4 +118,6 @@ void makeWindow(){
 
     //limits to 1 action per key press
     window.setKeyRepeatEnabled(false);
+
+    return window;
 }
