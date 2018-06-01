@@ -5,7 +5,8 @@ To-do priority
 1.implement one-way platforms
 2.implement weapons and how to throw them
 3.implement characted/weapon collision 
-4.add sprites
+4.possibly implement a game object manager
+5.add sprites
 */
 
 #include <SFML/Graphics.hpp>
@@ -68,10 +69,10 @@ int main()
         }
         window.clear();
         //draw players
-        p1.draw(window);
-        p2.draw(window);
         for(Platform p : platforms)
             p.draw(window);
+        p1.draw(window);
+        p2.draw(window);
         //end current frame
         window.display();
         //move the character shapes

@@ -15,9 +15,9 @@ protected:
 	RectangleShape player;
 	bool hasWeapon;
 
-	const float defaultXVelocity = 3.f;
-	const float playerInitialJump = -15.f;
-	const float gravityRate = 1.f;
+	constexpr static float defaultXVelocity = 3.f;
+	constexpr static float playerInitialJump = -15.f;
+	constexpr static float gravityRate = 1.f;
 	vector<Platform> platforms;
 public:
 	Player(Vector2f size, Vector2f pos, bool p1p2, Color c, const vector<Platform> t ){
@@ -53,14 +53,17 @@ public:
 
     	//falling, need to check for collisions
     	if(getYVelocity()>0){
-    		setOnGround(false);
     		for(Platform p : platforms){
     			if(getRightBound()>=p.getX()&&getX()<=p.getRightBound()&& p.getY()>=getLowerBound())
     				platformHeight = min(p.getY(),platformHeight);
     		}
+    		if(player.getPosition().y<platformHeight){
+	       		setOnGround(false);
+    		}
     		if(getLowerBound() + getYVelocity()> platformHeight){
-				setYVelocity(0.0);
 			    setOnGround(true);
+				setYVelocity(0.0);
+				player.setPosition(player.getPosition().x,platformHeight-playerHeight); //
     		}	
     	}
     	
