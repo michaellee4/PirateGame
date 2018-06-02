@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Platform.h"
+#include "Weapon.h"
 using namespace sf;
 
 class Player
@@ -12,15 +13,16 @@ protected:
 	int playerWidth;
 	bool grounded;
 	RectangleShape player;
-	bool hasWeapon;
+	Weapon* weapon;
 
 	constexpr static int defaultXVelocity = 3;
 	constexpr static int playerInitialJump = -15;
 	constexpr static int gravityRate = 1;
 
 	vector<Platform> platforms;
+	vector<Weapon> weapons;
 public:
-	Player(Vector2f size, Vector2f pos, bool p1p2, Color c, const vector<Platform> t ){
+	Player(Vector2f size, Vector2f pos, bool p1p2, Color c, const vector<Platform> t){//, const vector<Weapon> weapons
 		player.setSize(size);
 		player.setPosition(pos);
 		player.setFillColor(c);
@@ -31,11 +33,12 @@ public:
 		dx = p1p2?-defaultXVelocity:defaultXVelocity;
 		dy = 0;
 		grounded = true;
-		hasWeapon = true;
+		weapon = nullptr;
 	}
 	void draw(RenderWindow& window){
 		window.draw(player);
 	}
+	
 
 	//add's initial upwards momentum to jump
 	void startJump(){
@@ -44,7 +47,9 @@ public:
 			setOnGround(false);
 		}
 	}
-
+	void print(){
+		// cout<<weapons.size();
+	}
 	//code to simulate gravity, adds rate of gravity to dy until you hit a platform or the floor
 	void gravity(){
 		//begin jump code
@@ -69,12 +74,29 @@ public:
     	
     	//end jump code
 	}
+	
 	void move(int windowWidth){
 		//check for collisions with the side boundaries
 		if(windowWidth<=getRightBound()||getX()<=0)
 			setXVelocity(-getXVelocity());
 
 		gravity();
+
+		// findWeapon();
+
+		// cout<<(weapon == nullptr)<<endl;
+		// cout<<weapons.size()<<endl;
+
+		// if(weapon!=nullptr){
+		// 	cout<<weapon->w.getPosition().x<<" "<<weapon->w.getPosition().y<<endl;
+
+		// 	weapon->w.move(Vector2f(getXVelocity(),getYVelocity()));
+		// 	// cout<<weapon->w.getPosition().x<<" "<<weapon->w.getPosition().y<<endl;
+		// 	// cout<<(*weapon).w.getPosition().y<<endl;
+		// }
+		// else{
+		// 	findWeapon();
+		// }
 
 		player.move(Vector2f(getXVelocity(),getYVelocity()));
 	}
@@ -111,5 +133,19 @@ public:
 	int getGravity()const{
 		return gravityRate;
 	}
+	// void giveWeapon(Weapon w){
+	// 	weapon = &w;
+	// 	w.onGround = false;
+	// }
+	// void listWeapons(const vector<Weapon>& wep){
+	// 	weapons = wep;
+	// }
+	// void findWeapon(){
+	// 	for(Weapon w : weapons){
+	// 		if(getX()<=w.getRightBound()||getLowerBound()<=w.getY()||getY()>=w.getLowerBound()||getRightBound()<=w.getX()&&weapon!=nullptr&&w.onGround){
+	// 			giveWeapon(w);
+	// 		}
+	// 	}	
+	// }
 	// ~Player();
 };
